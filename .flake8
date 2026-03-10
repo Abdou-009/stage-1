@@ -1,0 +1,18 @@
+# ============================================================================
+# Flake8 — Python Linter Configuration
+# ============================================================================
+# WHAT:  Tells flake8 what rules to follow when checking our code.
+# WHY:   Without this, flake8 uses very strict defaults that would flag
+#        things like "line too long" on every line. These are sane defaults.
+# ============================================================================
+
+[flake8]
+max-line-length = 120
+exclude =
+    .git,
+    __pycache__,
+    .pytest_cache,
+    venv
+# E501 = line too long (we set 120 above, but some lines are still fine)
+# W503 = line break before binary operator (this is actually fine per PEP 8)
+extend-ignore = W503

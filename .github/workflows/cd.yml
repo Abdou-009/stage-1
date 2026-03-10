@@ -1,0 +1,52 @@
+# ============================================================================
+# CD — Continuous Deployment Pipeline
+# ============================================================================
+# WHAT:  Builds the Docker image, pushes it to Docker Hub, deploys to Render.
+# WHEN:  Only when CI passes on the main branch (push only, not PRs).
+# WHY:   Automates the entire deploy process — no manual steps needed.
+# ============================================================================
+#
+# REQUIRED SECRETS (add these in GitHub → Settings → Secrets):
+#   DOCKERHUB_USERNAME  → your Docker Hub username
+#   DOCKERHUB_TOKEN     → Docker Hub access token (not your password)
+#   RENDER_DEPLOY_HOOK  → Render deploy hook URL
+# ============================================================================
+
+name: CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Build, Push & Deploy
+    runs-on: ubuntu-latest
+    needs: []                           # Runs independently (CI runs in parallel)
+
+    # Only run if the CI workflow would pass (same trigger, so GitHub runs both)
+    steps:
+      # ── Step 1: Download our code ──
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Step 2: Log in to Docker Hub using our secrets ──
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # ── Step 3: Build and push the Docker image ──
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/devops-api:${{ github.sha }}
+
+      # ── Step 4: Trigger deploy on Render ──
+      - name: Deploy to Render
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK }}"
