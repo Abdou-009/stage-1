@@ -27,19 +27,19 @@ git push ──→ GitHub Actions
 
 ### Pipeline Files
 
-| File | Purpose |
-|---|---|
-| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Lint → Test → Build (every push & PR) |
+| File                                                   | Purpose                                           |
+| ------------------------------------------------------ | ------------------------------------------------- |
+| [`.github/workflows/ci.yml`](.github/workflows/ci.yml) | Lint → Test → Build (every push & PR)             |
 | [`.github/workflows/cd.yml`](.github/workflows/cd.yml) | Push to Docker Hub → Deploy to Render (main only) |
-| [`.flake8`](.flake8) | Python linter configuration |
+| [`.flake8`](.flake8)                                   | Python linter configuration                       |
 
 ### Required GitHub Secrets
 
-| Secret | Purpose |
-|---|---|
+| Secret               | Purpose                  |
+| -------------------- | ------------------------ |
 | `DOCKERHUB_USERNAME` | Your Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub access token |
-| `RENDER_DEPLOY_HOOK` | Render deploy hook URL |
+| `DOCKERHUB_TOKEN`    | Docker Hub access token  |
+| `RENDER_DEPLOY_HOOK` | Render deploy hook URL   |
 
 ---
 
@@ -136,16 +136,16 @@ pytest tests/ -v
 
 ## 🛠️ Tech Stack
 
-| Tool                   | Purpose                   |
-| ---------------------- | ------------------------- |
-| **Python 3.11**        | Application runtime       |
-| **Flask**              | REST API framework        |
-| **psutil**             | System metrics collection |
-| **Gunicorn**           | Production WSGI server    |
-| **Docker**             | Containerization          |
-| **GitHub Actions**     | CI/CD automation          |
-| **Docker Hub**         | Container registry        |
-| **Render**             | Cloud deployment          |
+| Tool               | Purpose                   |
+| ------------------ | ------------------------- |
+| **Python 3.11**    | Application runtime       |
+| **Flask**          | REST API framework        |
+| **psutil**         | System metrics collection |
+| **Gunicorn**       | Production WSGI server    |
+| **Docker**         | Containerization          |
+| **GitHub Actions** | CI/CD automation          |
+| **Docker Hub**     | Container registry        |
+| **Render**         | Cloud deployment          |
 
 ---
 
@@ -201,11 +201,11 @@ curl https://devops-lab-i12g.onrender.com/metrics/prometheus
 
 ## 🗺️ Roadmap
 
-| Stage | Focus                              | Status      |
-| ----- | ---------------------------------- | ----------- |
-| **1** | App + Docker + Cloud Deploy        | ✅ Complete  |
-| **2** | CI/CD Pipeline (GitHub Actions)    | ✅ Complete  |
-| **3** | Monitoring & Alerting (Grafana)    | ⬜ Next      |
-| **4** | Infrastructure as Code (Terraform) | ⬜           |
-| **5** | Kubernetes (k3s, Helm)             | ⬜           |
-| **6** | GitOps (ArgoCD)                    | ⬜           |
+| Stage | Focus                              | Status     |
+| ----- | ---------------------------------- | ---------- |
+| **1** | App + Docker + Cloud Deploy        | ✅ Complete |
+| **2** | CI/CD Pipeline (GitHub Actions)    | ✅ Complete |
+| **3** | Monitoring & Alerting (Grafana)    | ⬜ Next     |
+| **4** | Infrastructure as Code (Terraform) | ⬜          |
+| **5** | Kubernetes (k3s, Helm)             | ⬜          |
+| **6** | GitOps (ArgoCD)                    | ⬜          |
