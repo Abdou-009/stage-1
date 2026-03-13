@@ -1,17 +1,21 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 import psutil
 import platform
 import datetime
 import logging
 import os
+import time
+from prometheus_client import (
+    Gauge, Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+)
 
 # ── App Setup ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
 
-APP_VERSION = os.getenv("APP_VERSION", "1.1.0")
+APP_VERSION = os.getenv("APP_VERSION", "1.2.0")
 START_TIME = datetime.datetime.now(datetime.timezone.utc)
 
-# Request counter
+# Request counter (internal)
 request_count = {"total": 0}
 
 # ── Logging ────────────────────────────────────────────────────────────────────
@@ -22,11 +26,71 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ── Prometheus Metrics (official library) ──────────────────────────────────────
+# These are the "real" metrics that Prometheus scrapes via /metrics/prom
+
+cpu_usage = Gauge(
+    "cpu_usage_percent", "Current CPU usage percentage"
+)
+memory_usage = Gauge(
+    "memory_usage_bytes", "Memory usage in bytes"
+)
+memory_total = Gauge(
+    "memory_total_bytes", "Total memory in bytes"
+)
+disk_usage_metric = Gauge(
+    "disk_usage_bytes", "Disk usage in bytes"
+)
+disk_total_metric = Gauge(
+    "disk_total_bytes", "Total disk in bytes"
+)
+app_uptime = Gauge(
+    "app_uptime_seconds", "Application uptime in seconds"
+)
+app_requests = Counter(
+    "app_requests_total", "Total HTTP requests served"
+)
+http_request_duration = Histogram(
+    "http_request_duration_seconds",
+    "HTTP request duration in seconds",
+    labelnames=["method", "endpoint", "status"],
+    buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0]
+)
+
+
+def _update_system_metrics():
+    """Refresh all system gauges so Prometheus gets current values."""
+    try:
+        cpu_usage.set(psutil.cpu_percent(interval=0))
+        mem = psutil.virtual_memory()
+        memory_usage.set(mem.used)
+        memory_total.set(mem.total)
+        disk = psutil.disk_usage("/")
+        disk_usage_metric.set(disk.used)
+        disk_total_metric.set(disk.total)
+        app_uptime.set(_uptime_seconds())
+    except Exception as e:
+        logger.error("Failed to update Prometheus metrics: %s", e)
+
 
 @app.before_request
-def count_requests():
+def before_request_handler():
     request_count["total"] += 1
+    app_requests.inc()
+    request.start_time = time.time()
     logger.info("%-6s %s", request.method, request.path)
+
+
+@app.after_request
+def after_request_handler(response):
+    if hasattr(request, "start_time"):
+        duration = time.time() - request.start_time
+        http_request_duration.labels(
+            method=request.method,
+            endpoint=request.path,
+            status=response.status_code,
+        ).observe(duration)
+    return response
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -43,11 +107,12 @@ def index():
         "endpoints": {
             "/health": "Application health check",
             "/metrics": "CPU, RAM, and disk metrics (JSON)",
-            "/metrics/prometheus": "Metrics in Prometheus format",
+            "/metrics/prometheus": "Metrics in Prometheus text format (legacy)",
+            "/metrics/prom": "Metrics via official Prometheus client library",
             "/info": "Server information",
             "/processes": "Top 5 processes by CPU usage",
         },
-        "documentation": "https://github.com/abdou-009/devops-lab",
+        "documentation": "https://github.com/Abdou-009/DevOps_Project",
     })
 
 
@@ -97,7 +162,7 @@ def metrics():
 
 @app.route("/metrics/prometheus")
 def metrics_prometheus():
-    """Expose metrics in Prometheus text format — ready for Stage 3 Grafana."""
+    """Expose metrics in hand-crafted Prometheus text format (legacy)."""
     try:
         cpu = psutil.cpu_percent(interval=1)
         mem = psutil.virtual_memory()
@@ -136,6 +201,13 @@ def metrics_prometheus():
     except Exception as e:
         logger.error("Failed to generate Prometheus metrics: %s", e)
         return "# error collecting metrics\n", 500, {"Content-Type": "text/plain; charset=utf-8"}
+
+
+@app.route("/metrics/prom")
+def metrics_prom():
+    """Expose metrics using the official prometheus_client library."""
+    _update_system_metrics()
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.route("/info")

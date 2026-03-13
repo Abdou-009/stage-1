@@ -1,0 +1,49 @@
+# ============================================================================
+# Prometheus Alerting Rules
+# ============================================================================
+# WHAT:  Defines conditions that trigger alerts.
+# WHY:   Alerts tell you when something is wrong BEFORE users notice.
+# ============================================================================
+
+groups:
+  - name: devops-api-alerts
+    rules:
+      # ── Alert: High CPU Usage ──────────────────────────────────────────────
+      - alert: HighCPU
+        expr: cpu_usage_percent > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage has been above 80% for more than 2 minutes (current: {{ $value }}%)"
+
+      # ── Alert: High Memory Usage ───────────────────────────────────────────
+      - alert: HighMemory
+        expr: (memory_usage_bytes / memory_total_bytes) * 100 > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage has been above 85% for more than 2 minutes"
+
+      # ── Alert: API Down ────────────────────────────────────────────────────
+      - alert: APIDown
+        expr: up{job="devops-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "DevOps API is unreachable"
+          description: "Prometheus cannot reach the DevOps API for more than 1 minute"
+
+      # ── Alert: High Disk Usage ─────────────────────────────────────────────
+      - alert: HighDiskUsage
+        expr: (disk_usage_bytes / disk_total_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage has been above 90% for more than 5 minutes"

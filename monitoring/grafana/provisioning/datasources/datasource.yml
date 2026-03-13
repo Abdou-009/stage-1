@@ -1,0 +1,16 @@
+# ============================================================================
+# Grafana Datasource — Auto-Provisioning
+# ============================================================================
+# WHAT:  Automatically adds Prometheus as a data source on Grafana startup.
+# WHY:   No manual configuration needed — everything works out of the box.
+# ============================================================================
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090     # Docker service name
+    isDefault: true
+    editable: true

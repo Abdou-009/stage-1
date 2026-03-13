@@ -80,6 +80,23 @@ def test_prometheus_contains_metrics(client):
     assert "app_uptime_seconds" in text
 
 
+# ── Prometheus Client (official library) ───────────────────────────────────────
+def test_prom_endpoint_returns_200(client):
+    resp = client.get("/metrics/prom")
+    assert resp.status_code == 200
+
+
+def test_prom_content_type(client):
+    resp = client.get("/metrics/prom")
+    assert "text/plain" in resp.content_type or "text/plain" in resp.content_type
+
+
+def test_prom_contains_standard_metrics(client):
+    text = client.get("/metrics/prom").data.decode()
+    assert "cpu_usage_percent" in text
+    assert "http_request_duration_seconds" in text
+
+
 # ── Info ───────────────────────────────────────────────────────────────────────
 def test_info_returns_200(client):
     resp = client.get("/info")

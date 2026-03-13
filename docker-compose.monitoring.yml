@@ -1,0 +1,100 @@
+# ============================================================================
+# Docker Compose — Full Monitoring Stack
+# ============================================================================
+# WHAT:  Runs the Flask API + Prometheus + Grafana together.
+# WHEN:  Use this for local development and monitoring.
+# HOW:   docker-compose -f docker-compose.monitoring.yml up --build
+# ============================================================================
+#
+# Services:
+#   api         → Flask API          → http://localhost:5000
+#   prometheus  → Metrics collector  → http://localhost:9090
+#   grafana     → Dashboards         → http://localhost:3000  (admin/admin)
+# ============================================================================
+
+services:
+  # ── Flask API ────────────────────────────────────────────────────────────────
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_VERSION=1.2.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.50"
+    networks:
+      - monitoring
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Prometheus — Metrics Collector ───────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alerting_rules.yml:/etc/prometheus/alerting_rules.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - monitoring
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Grafana — Dashboards & Visualization ─────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.6.0
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── Shared Network ──────────────────────────────────────────────────────────────
+networks:
+  monitoring:
+    driver: bridge
+
+# ── Persistent Volumes ──────────────────────────────────────────────────────────
+volumes:
+  prometheus_data:
+  grafana_data:

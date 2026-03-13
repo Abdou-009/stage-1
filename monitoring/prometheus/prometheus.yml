@@ -1,0 +1,30 @@
+# ============================================================================
+# Prometheus Configuration
+# ============================================================================
+# WHAT:  Tells Prometheus where to scrape metrics from and how often.
+# WHY:   Prometheus needs to know about our API to collect its metrics.
+# ============================================================================
+
+global:
+  scrape_interval: 15s          # How often to pull metrics from targets
+  evaluation_interval: 15s      # How often to evaluate alerting rules
+
+# ── Alerting Rules ─────────────────────────────────────────────────────────────
+rule_files:
+  - "alerting_rules.yml"
+
+# ── Scrape Targets ─────────────────────────────────────────────────────────────
+scrape_configs:
+  # Prometheus monitors itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Our Flask API — the main target
+  - job_name: "devops-api"
+    metrics_path: "/metrics/prom"    # Where our app exposes Prometheus metrics
+    static_configs:
+      - targets: ["api:5000"]        # Docker service name + port
+        labels:
+          environment: "development"
+          app: "devops-monitoring-api"
