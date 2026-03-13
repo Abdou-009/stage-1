@@ -9,3 +9,5 @@ tests/
 .env
 .vscode
 .idea
+docs/
+monitoring/

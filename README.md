@@ -13,6 +13,10 @@ A **production-ready REST API** for real-time system metrics monitoring, built w
 
 A complete **observability stack** runs alongside the API:
 
+### 📸 Grafana Dashboard
+
+![Grafana Dashboard](docs/images/grafana-dashboard.png)
+
 ```
                           ┌─────────────┐
                           │  Grafana    │ ← Dashboards & Alerts
