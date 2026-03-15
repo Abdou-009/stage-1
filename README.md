@@ -174,20 +174,36 @@ git push ──→ GitHub Actions
 
 ## 🚀 Quick Start
 
-### Docker (Recommended)
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and [Git](https://git-scm.com/) installed.
 
 ```bash
-docker-compose up --build
+git clone https://github.com/Abdou-009/DevOps_Project.git
+cd DevOps_Project
 ```
 
-The API will be available at `http://localhost:5000`
+### Option 1 — API Only
 
-### Local Development
+```bash
+docker compose up --build -d
+# → API running at http://localhost:5000
+```
+
+### Option 2 — Full Monitoring Stack (API + Prometheus + Grafana)
+
+```bash
+docker compose -f docker-compose.monitoring.yml up --build -d
+# → API at http://localhost:5000
+# → Prometheus at http://localhost:9090
+# → Grafana at http://localhost:3000 (login: admin/admin)
+```
+
+### Option 3 — Local Development (no Docker)
 
 ```bash
 cd app
 pip install -r requirements.txt
 python app.py
+# → API running at http://localhost:5000
 ```
 
 ---
