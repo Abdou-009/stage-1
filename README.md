@@ -13,10 +13,6 @@ A **production-ready REST API** for real-time system metrics monitoring, built w
 
 A complete **observability stack** runs alongside the API:
 
-### 📸 Grafana Dashboard
-
-![Grafana Dashboard](docs/images/grafana-dashboard.png)
-
 ```
                           ┌─────────────┐
                           │  Grafana    │ ← Dashboards & Alerts
@@ -42,6 +38,30 @@ A complete **observability stack** runs alongside the API:
 | **Prometheus** | `http://localhost:9090` | Metrics collection & alerting rules      |
 | **Grafana**    | `http://localhost:3000` | Pre-built dashboard (login: admin/admin) |
 
+### 📸 Grafana Dashboard — Real-Time Metrics
+
+Pre-built dashboard with 8 panels showing CPU, memory, disk, uptime, request count, and latency percentiles — all auto-provisioned on startup.
+
+![Grafana Dashboard](docs/images/grafana-dashboard.png)
+
+### 📸 Grafana — Auto-Provisioned Dashboards
+
+The dashboard is automatically loaded via provisioning files — no manual import needed. Tags (`api`, `devops`, `monitoring`) make it easy to find.
+
+![Grafana Dashboards List](docs/images/grafana-dashboards-list.png)
+
+### 📸 Prometheus Targets — Scrape Health
+
+Shows all targets Prometheus is monitoring. Both the **devops-api** and **prometheus** targets are `UP`, meaning Prometheus is successfully scraping metrics every 15 seconds.
+
+![Prometheus Targets](docs/images/prometheus-targets.png)
+
+### 📸 Prometheus Alerts — Automated Alerting Rules
+
+Four alerting rules are loaded and all **INACTIVE** (green) — meaning everything is healthy. If CPU exceeds 80% for 2 minutes, the `HighCPU` alert would fire.
+
+![Prometheus Alerts](docs/images/prometheus-alerts.png)
+
 ### Alerting Rules
 
 | Alert            | Condition              | Duration |
@@ -55,16 +75,16 @@ A complete **observability stack** runs alongside the API:
 
 ```bash
 # Start everything (API + Prometheus + Grafana)
-docker-compose -f docker-compose.monitoring.yml up --build -d
+docker compose -f docker-compose.monitoring.yml up --build -d
 
 # Check all services are running
-docker-compose -f docker-compose.monitoring.yml ps
+docker compose -f docker-compose.monitoring.yml ps
 
 # Open Grafana → http://localhost:3000 (admin/admin)
 # Open Prometheus → http://localhost:9090/targets
 
 # Stop everything
-docker-compose -f docker-compose.monitoring.yml down
+docker compose -f docker-compose.monitoring.yml down
 ```
 
 ---
