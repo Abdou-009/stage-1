@@ -241,6 +241,25 @@ pytest tests/ -v
 
 ---
 
+## 🏗️ Infrastructure as Code (Stage 4)
+
+The entire Render production environment is defined as code using **Terraform**. Instead of manually configuring settings in a web dashboard, the infrastructure is declared in `.tf` files. This ensures reproducible environments, version-controlled infrastructure, and easy disaster recovery.
+
+- **Provider:** Official `render-oss/render`
+- **Resources Managed:** `render_web_service` (Docker runtime, health checks, env vars)
+- **Configuration:** Parameterized via `variables.tf` and `terraform.tfvars`
+
+### See it in action (Dry-Run)
+
+```bash
+cd terraform
+terraform init
+terraform plan
+```
+*(Note: We run `terraform plan` to validate the IaC configuration. Running `terraform apply` requires upgrading the Render free tier to the 'starter' plan to support advanced API configuration like maintenance modes.)*
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -264,6 +283,11 @@ DevOps_Project/
 │           │   └── datasource.yml          # Auto-provision Prometheus source
 │           └── dashboards/
 │               └── dashboard-provider.yml  # Auto-provision dashboard
+├── terraform/
+│   ├── main.tf                             # Render web service resource
+│   ├── variables.tf                        # Configurable input variables
+│   ├── outputs.tf                          # Service URL and ID outputs
+│   └── providers.tf                        # Render provider config
 ├── tests/
 │   └── test_app.py                         # Unit tests (pytest) — 17 tests
 ├── .flake8                                 # Linter configuration
@@ -312,6 +336,6 @@ curl https://devops-lab-i12g.onrender.com/metrics/prometheus
 | **1** | App + Docker + Cloud Deploy        | ✅ Complete |
 | **2** | CI/CD Pipeline (GitHub Actions)    | ✅ Complete |
 | **3** | Monitoring & Alerting (Prometheus) | ✅ Complete |
-| **4** | Infrastructure as Code (Terraform) | ⬜ Next     |
-| **5** | Kubernetes (k3s, Helm)             | ⬜          |
+| **4** | Infrastructure as Code (Terraform) | ✅ Complete |
+| **5** | Kubernetes (k3s, Helm)             | ⬜ Next     |
 | **6** | GitOps (ArgoCD)                    | ⬜          |
