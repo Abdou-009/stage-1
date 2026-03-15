@@ -5,11 +5,11 @@
 
 A **production-ready REST API** for real-time system metrics monitoring, built with Python Flask, containerized with Docker, and deployed via **CI/CD pipeline** — with full **Prometheus + Grafana observability**.
 
-> Part of a **6-stage DevOps platform** demonstrating the full software delivery lifecycle — from containerization to GitOps.
+> A complete **DevOps platform** demonstrating the full software delivery lifecycle — from containerization to Infrastructure as Code.
 
 ---
 
-## 📊 Monitoring Stack (Stage 3)
+## 📊 Monitoring Stack
 
 A complete **observability stack** runs alongside the API:
 
@@ -89,7 +89,7 @@ docker compose -f docker-compose.monitoring.yml down
 
 ---
 
-## 🔄 CI/CD Pipeline (Stage 2)
+## 🔄 CI/CD Pipeline
 
 Every `git push` to `main` triggers an **automated pipeline**:
 
@@ -241,7 +241,7 @@ pytest tests/ -v
 
 ---
 
-## 🏗️ Infrastructure as Code (Stage 4)
+## 🏗️ Infrastructure as Code
 
 The entire Render production environment is defined as code using **Terraform**. Instead of manually configuring settings in a web dashboard, the infrastructure is declared in `.tf` files. This ensures reproducible environments, version-controlled infrastructure, and easy disaster recovery.
 
@@ -327,15 +327,4 @@ curl https://devops-lab-i12g.onrender.com/metrics
 curl https://devops-lab-i12g.onrender.com/metrics/prometheus
 ```
 
----
 
-## 🗺️ Roadmap
-
-| Stage | Focus                              | Status     |
-| ----- | ---------------------------------- | ---------- |
-| **1** | App + Docker + Cloud Deploy        | ✅ Complete |
-| **2** | CI/CD Pipeline (GitHub Actions)    | ✅ Complete |
-| **3** | Monitoring & Alerting (Prometheus) | ✅ Complete |
-| **4** | Infrastructure as Code (Terraform) | ✅ Complete |
-| **5** | Kubernetes (k3s, Helm)             | ⬜ Next     |
-| **6** | GitOps (ArgoCD)                    | ⬜          |
