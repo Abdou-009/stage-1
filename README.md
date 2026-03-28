@@ -190,22 +190,6 @@ python app.py
 
 ---
 
-## 📊 Monitoring Stack
-
-```
-┌─────────────┐
-│   Grafana   │ ← Dashboards & Alerts      :3000
-└──────┬──────┘
-       │ queries
-┌──────▼──────┐
-│ Prometheus  │ ← Scrapes metrics every 15s  :9090
-└──────┬──────┘
-       │ scrapes /metrics/prom
-┌──────▼──────┐
-│  Flask API  │ ← Your application           :5000
-└─────────────┘
-```
-
 ### Grafana Dashboard
 
 Pre-built dashboard with 8 panels — auto-provisioned on startup, no manual import needed:
