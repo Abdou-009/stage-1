@@ -35,7 +35,7 @@ curl https://devops-lab-i12g.onrender.com/metrics
 
 ```
 ┌─────────────────────────────────────────────┐
-│              Developer Machine               │
+│              Developer Machine              │
 │                                             │
 │   git push → GitHub Actions                 │
 │                   │                         │
@@ -49,7 +49,7 @@ curl https://devops-lab-i12g.onrender.com/metrics
                         │
                         ▼
 ┌─────────────────────────────────────────────┐
-│              Production (Render)             │
+│              Production (Render)            │
 │                                             │
 │   ┌─────────────┐                           │
 │   │  Flask API  │ :5000                     │
@@ -58,7 +58,7 @@ curl https://devops-lab-i12g.onrender.com/metrics
 └─────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────┐
-│         Local Monitoring Stack               │
+│         Local Monitoring Stack              │
 │                                             │
 │   Grafana :3000 → Prometheus :9090          │
 │                       │                     │
