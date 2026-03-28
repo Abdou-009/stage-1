@@ -201,7 +201,17 @@ Pre-built dashboard with 8 panels — auto-provisioned on startup, no manual imp
 - Request count
 - Request latency percentiles (p50, p95, p99)
 
-📸 Screenshots in [`docs/images/`](docs/images/)
+**Grafana Dashboard:**
+![Grafana Dashboard](docs/images/grafana-dashboard.png)
+
+**Dashboards List:**
+![Grafana Dashboards List](docs/images/grafana-dashboards-list.png)
+
+**Prometheus Targets:**
+![Prometheus Targets](docs/images/prometheus-targets.png)
+
+**Prometheus Alerts:**
+![Prometheus Alerts](docs/images/prometheus-alerts.png)
 
 ### Alerting Rules
 
